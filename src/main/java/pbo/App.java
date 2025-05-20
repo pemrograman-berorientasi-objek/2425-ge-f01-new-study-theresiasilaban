@@ -11,7 +11,7 @@ public class App {
         EntityManager em = null;
         BufferedReader reader = null;
         try {
-            emf = Persistence.createEntityManagerFactory("f01PU");
+            emf = Persistence.createEntityManagerFactory("study_plan_pu");
             em = emf.createEntityManager();
             reader = new BufferedReader(new InputStreamReader(System.in));
             String line;
