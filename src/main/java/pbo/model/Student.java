@@ -1,35 +1,22 @@
-package pbo.f01.model;
+package pbo.model;
 
+import javax.persistence.*;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
 
 @Entity
-@Table(name = "students")
+@Table(name = "student")
 public class Student {
-
     @Id
-    @Column(name = "nim", nullable = false, length = 20)
+    @Column(name = "nim", length = 20, nullable = false)
     private String nim;
-    @Column(name = "name", nullable = false, length = 30)
+
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
-    @Column(name = "prodi", nullable = false, length = 8)
+
+    @Column(name = "prodi", length = 50, nullable = false)
     private String prodi;
 
-    @ManyToMany(targetEntity = course.class, cascade = CascadeType.ALL)
-    @JoinTable(name = "student_course", joinColumns = @JoinColumn(name = "course_nim", referencedColumnName = "nim"), 
-    inverseJoinColumns = @JoinColumn(name = "course_name", referencedColumnName = "name"))
-    private List<Course> courses;
-
-
-    public Student() {
-    }
+    public Student() {}
 
     public Student(String nim, String name, String prodi) {
         this.nim = nim;
@@ -37,47 +24,12 @@ public class Student {
         this.prodi = prodi;
     }
 
-    public Student(String nim, String name, String prodi, List<Course> courses) {
-        this.nim = nim;
-        this.name = name;
-        this.prodi = prodi;
-        this.courses = courses;
-    }
+    public String getNim() { return nim; }
+    public void setNim(String nim) { this.nim = nim; }
 
-    public String getNim() {
-        return nim;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public String getProdi() {
-        return prodi;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public List<Course> getcourses() {
-        return courses;
-    }
-    
-    public void setNim(String nim) {
-        this.nim = nim;
-    }
-    
-    public void setCourses(List<Course> courses) {
-        this.courses = courses;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    public void setProdi(String prodi) {
-        this.prodi = prodi;
-    }
-
-    @Override
-    public String toString() {
-        return nim + "|" + name + "|" + prodi;
-    }
+    public String getProdi() { return prodi; }
+    public void setProdi(String prodi) { this.prodi = prodi; }
 }

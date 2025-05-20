@@ -1,80 +1,41 @@
 package pbo.model;
-import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
-@Table (name = "course")
+@Table(name = "course")
 public class Course {
-
     @Id
     @Column(name = "kode", length = 20, nullable = false)
-    private String name;
+    private String kode;
+
     @Column(name = "name", length = 30, nullable = false)
     private String name;
-    @Column(name = "semester", length = 30, nullable = false)
-    private String semester;
-    @Column(name = "credit", length = 30, nullable = false)
-    private String credit;
 
-    @ManyToMany(mappedBy = "course", cascade = CascadeType.ALL)
-    private List<Student> semester;
+    @Column(name = "semester", nullable = false)
+    private int semester;
 
-    public Course() {
-    }
-    
-    public Course(String name, String name, String semester) {
-        this.name = name;
-        this.name = name;
-        this.semester = semester;
-    }
+    @Column(name = "credit", nullable = false)
+    private int credit;
 
-    public Dorm(String name, String name, String semester, List<Student> semester) {
+    public Course() {}
+
+    public Course(String kode, String name, int semester, int credit) {
         this.kode = kode;
         this.name = name;
         this.semester = semester;
         this.credit = credit;
     }
 
-    public String getKode() {
-        return kode;
-    }
-    
-    public String getName() {
-        return name;
-    }
+    public String getKode() { return kode; }
+    public void setKode(String kode) { this.kode = kode; }
 
-    public String getCredit() {
-        return credit;
-    }
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
 
-    public String getSemester() {
-        return semester;
-    }
-    
-    public void setName(String name) {
-        this.name = name;
-    }
+    public int getSemester() { return semester; }
+    public void setSemester(int semester) { this.semester = semester; }
 
-    public void setKode(String kode) {
-        this.kode = kode;
-    }
-    
-    public void setCredit(String credit) {
-        this.credit = credit;
-    }
-
-    public void setSemester(String semester) {
-        this.semester = semester;
-    }    
-
-    @Override
-    public String toString() {
-        return kode + "|" + name + "|" + semester + "|" + credit;
-    }
+    public int getCredit() { return credit; }
+    public void setCredit(int credit) { this.credit = credit; }
 }
