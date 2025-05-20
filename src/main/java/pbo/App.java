@@ -1,12 +1,95 @@
 package pbo;
 
-/**
- * Main class
- *
- */
-public class App {
+import pbo.model.*;
+import javax.persistence.*;
+import java.util.*;
+import java.io.*;
 
-  public static void main(String[] args) {
-    // your codes
-  }
+public class App {
+    public static void main(String[] args) throws Exception {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("f01PU");
+        EntityManager em = emf.createEntityManager();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        try {
+            while ((line = reader.readLine()) != null) {
+                if (line.equals("---")) break;
+
+                if (line.startsWith("student-add#")) {
+                    String[] parts = line.split("#", 4);
+                    if (parts.length != 4) continue;
+                    em.getTransaction().begin();
+                    try {
+                        em.persist(new Student(parts[1], parts[2], parts[3]));
+                        em.getTransaction().commit();
+                    } catch (Exception ex) {
+                        em.getTransaction().rollback();
+                        System.err.println("Gagal menambah mahasiswa: " + ex.getMessage());
+                    }
+                } else if (line.equals("student-show-all")) {
+                    List<Student> students = em.createQuery("SELECT s FROM Student s ORDER BY s.nim", Student.class).getResultList();
+                    for (Student s : students) {
+                        System.out.println(s.getNim() + "|" + s.getName() + "|" + s.getProdi());
+                    }
+                } else if (line.startsWith("course-add#")) {
+                    String[] parts = line.split("#", 5);
+                    if (parts.length != 5) continue;
+                    em.getTransaction().begin();
+                    try {
+                        em.persist(new Course(parts[1], parts[2], Integer.parseInt(parts[3]), Integer.parseInt(parts[4])));
+                        em.getTransaction().commit();
+                    } catch (Exception ex) {
+                        em.getTransaction().rollback();
+                        System.err.println("Gagal menambah mata kuliah: " + ex.getMessage());
+                    }
+                } else if (line.equals("course-show-all")) {
+                    List<Course> courses = em.createQuery("SELECT c FROM Course c ORDER BY c.semester, c.kode", Course.class).getResultList();
+                    for (Course c : courses) {
+                        System.out.println(c.getKode() + "|" + c.getName() + "|" + c.getSemester() + "|" + c.getCredit());
+                    }
+                } else if (line.startsWith("enroll#")) {
+                    String[] parts = line.split("#", 3);
+                    if (parts.length != 3) continue;
+                    Student s = em.find(Student.class, parts[1]);
+                    Course c = em.find(Course.class, parts[2]);
+                    if (s != null && c != null) {
+                        Long count = em.createQuery(
+                            "SELECT COUNT(e) FROM Enrollment e WHERE e.student.nim = :nim AND e.course.kode = :kode", Long.class)
+                            .setParameter("nim", parts[1])
+                            .setParameter("kode", parts[2])
+                            .getSingleResult();
+                        if (count == 0) {
+                            em.getTransaction().begin();
+                            try {
+                                em.persist(new Enrollment(s, c));
+                                em.getTransaction().commit();
+                            } catch (Exception ex) {
+                                em.getTransaction().rollback();
+                                System.err.println("Gagal melakukan enroll: " + ex.getMessage());
+                            }
+                        }
+                    }
+                } else if (line.startsWith("student-show#")) {
+                    String[] parts = line.split("#", 2);
+                    if (parts.length != 2) continue;
+                    String nim = parts[1];
+                    Student s = em.find(Student.class, nim);
+                    if (s != null) {
+                        System.out.println(s.getNim() + "|" + s.getName() + "|" + s.getProdi());
+                        List<Course> courses = em.createQuery(
+                            "SELECT e.course FROM Enrollment e WHERE e.student.nim = :nim ORDER BY e.course.semester, e.course.kode", Course.class)
+                            .setParameter("nim", nim)
+                            .getResultList();
+                        for (Course c : courses) {
+                            System.out.println(c.getKode() + "|" + c.getName() + "|" + c.getSemester() + "|" + c.getCredit());
+                        }
+                    }
+                }
+            }
+        } finally {
+            reader.close();
+            em.close();
+            emf.close();
+        }
+    }
 }
